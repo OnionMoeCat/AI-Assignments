@@ -12,10 +12,10 @@ namespace AISandbox
         OpenedDoor
     };
 
-    public class Entity
+    public struct Entity
     {
-        public EntityType EntityType = EntityType.Nothing;
-        public Color Color = Color.black;
+        public EntityType EntityType;
+        public Color Color;
     };
 
     public class EntityTypeManager
@@ -32,10 +32,10 @@ namespace AISandbox
         private static Dictionary<EntityType, Sprite> m_entitySpriteDict = new Dictionary<EntityType, Sprite>()
         {
             {EntityType.Nothing, null},
-            {EntityType.LockedDoor, Resources.Load<Sprite>("Sprite/lock.png")},
-            {EntityType.Key, Resources.Load<Sprite>("Sprite/key.png")},
-            {EntityType.OpenedDoor, Resources.Load<Sprite>("Sprite/unlock.png")},
-            {EntityType.Treasure, Resources.Load<Sprite>("Sprite/treasure.png")}
+            {EntityType.LockedDoor, Resources.Load<Sprite>("Sprites/lock")},
+            {EntityType.Key, Resources.Load<Sprite>("Sprites/key")},
+            {EntityType.OpenedDoor, Resources.Load<Sprite>("Sprites/unlock")},
+            {EntityType.Treasure, Resources.Load<Sprite>("Sprites/treasure")}
         };
 
         public static bool GetPassable(EntityType i_entityType)

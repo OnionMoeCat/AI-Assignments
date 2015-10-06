@@ -6,11 +6,11 @@ namespace AISandbox {
     public class Grid : MonoBehaviour {
         public GridNode gridNodePrefab;
         public Pathfollowing pathfollowing;
+        public ButtonManager buttonManager;
 
         private GridNode[ , ] _nodes;
         private float _node_width;
         private float _node_height;
-        private TerrainType _draw_terrain_type;
 
         private GridNode _start_node;
         private GridNode _end_node;
@@ -134,14 +134,18 @@ namespace AISandbox {
                  && column >= 0 && column < _nodes.GetLength(1))
                 {
                     GridNode node = _nodes[row, column];
-                    if (Input.GetMouseButtonDown(0))
+                    
+                    if (node.TerrainType != buttonManager.terrainType)
                     {
-                        int value = (int) (node.TerrainType + 1) % System.Enum.GetNames(typeof(TerrainType)).Length; 
-                        _draw_terrain_type = (TerrainType)value;
+                        node.TerrainType = buttonManager.terrainType;
                     }
-                    if (node.TerrainType != _draw_terrain_type)
+
+                    if (node.Entity.EntityType != buttonManager.entity.EntityType || node.Entity.Color != buttonManager.entity.Color)
                     {
-                        node.TerrainType = _draw_terrain_type;
+                        if (buttonManager.entity.EntityType != EntityType.Nothing)
+                        {
+                            node.Entity = buttonManager.entity;
+                        }
                     }
                 }
             }

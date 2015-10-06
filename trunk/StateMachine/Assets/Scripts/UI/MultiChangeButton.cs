@@ -18,8 +18,7 @@ namespace AISandbox
         public bool Terrain;
 
         public ButtonManager ButtonManager;
-
-            public void Awake()
+        public void Awake()
         {
             m_image = GetComponent<Image>();
         }

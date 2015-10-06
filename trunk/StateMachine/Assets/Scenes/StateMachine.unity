@@ -1054,6 +1054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridNodePrefab: {fileID: 476637948}
   pathfollowing: {fileID: 178496189}
+  buttonManager: {fileID: 1341829631}
 --- !u!1 &1553366086
 GameObject:
   m_ObjectHideFlags: 0
