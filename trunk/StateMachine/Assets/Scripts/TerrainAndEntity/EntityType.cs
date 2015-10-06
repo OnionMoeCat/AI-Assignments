@@ -8,8 +8,8 @@ namespace AISandbox
         Nothing,
         LockedDoor,
         Key,
-        OpenedDoor,
-        Treasure
+        Treasure,
+        OpenedDoor
     };
 
     public class Entity

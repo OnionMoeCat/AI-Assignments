@@ -62,7 +62,6 @@ namespace AISandbox {
             }
         }
 
-
         private void Awake()
         {
             entity = new Entity();
