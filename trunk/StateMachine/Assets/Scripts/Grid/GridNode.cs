@@ -24,7 +24,14 @@ namespace AISandbox {
         private bool passable;
         public bool Passable
         {
-            get { return passable; }
+            get
+            {
+                if (entity.EntityType == EntityType.LockedDoor)
+                {
+                    return false;
+                }
+                return passable;
+            }
         }
 
         [SerializeField]
@@ -54,11 +61,6 @@ namespace AISandbox {
             set
             {
                 entity = value;
-                passable = EntityTypeManager.GetPassable(entity.EntityType);
-                if (!passable)
-                {
-                    terrainType = TerrainType.Impassable;
-                }
             }
         }
 
@@ -71,7 +73,15 @@ namespace AISandbox {
 
         void Update()
         {
-            sprite_renderer.color = TerrainTypeManager.GetColor(terrainType);
+            if (Passable)
+            {
+                sprite_renderer.color = TerrainTypeManager.GetColor(terrainType);
+            }
+            else
+            {
+                sprite_renderer.color = Color.black;
+            }
+
             if (entity.EntityType == EntityType.Nothing)
             {
                 child_sprite_renderer.enabled = false;

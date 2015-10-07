@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Assertions;
 
 namespace AISandbox {
     public class Grid : MonoBehaviour {
@@ -12,14 +13,28 @@ namespace AISandbox {
         private float _node_width;
         private float _node_height;
 
-        private GridNode _start_node;
-        private GridNode _end_node;
-
         private int _num_row;
 
         private int _num_column;
 
         private bool _diagnoal;
+
+        private TerrainType _draw_terrain_type;
+        private Entity _draw_entity;
+
+        private bool m_enableEdit = true;
+
+        public bool EnableEdit
+        {
+            get
+            {
+                return m_enableEdit;
+            }
+            set
+            {
+                m_enableEdit = value;
+            }
+        }
 
         public bool diagnoal
         {
@@ -30,30 +45,6 @@ namespace AISandbox {
             set
             {
                 _diagnoal = value;
-            }
-        }
-
-        public GridNode start_node
-        {
-            get
-            {
-                return _start_node;
-            }
-            set
-            {
-                _start_node = value;
-            }
-        }
-
-        public GridNode end_node
-        {
-            get
-            {
-                return _end_node;
-            }
-            set
-            {
-                _end_node = value;
             }
         }
 
@@ -121,9 +112,18 @@ namespace AISandbox {
         {
             ProcessInput();
         }
+
+        private void RemoveEntityAt(GridNode i_gridNode)
+        {
+            Entity temp = i_gridNode.Entity;
+            temp.EntityType = EntityType.Nothing;
+            i_gridNode.Entity = temp;            
+        }
+
+
         public void ProcessInput()
         {
-            if (Input.GetMouseButton(0))
+            if (m_enableEdit && Input.GetMouseButton(0))
             {
                 Vector3 world_pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 Vector3 local_pos = transform.InverseTransformPoint(world_pos);
@@ -134,17 +134,57 @@ namespace AISandbox {
                  && column >= 0 && column < _nodes.GetLength(1))
                 {
                     GridNode node = _nodes[row, column];
-                    
-                    if (node.TerrainType != buttonManager.terrainType)
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        node.TerrainType = buttonManager.terrainType;
+                        _draw_terrain_type = buttonManager.terrainType;
+                        _draw_entity = buttonManager.entity;
                     }
 
-                    if (node.Entity.EntityType != buttonManager.entity.EntityType || node.Entity.Color != buttonManager.entity.Color)
+                    if (_draw_entity.EntityType == EntityType.Nothing)
                     {
-                        if (buttonManager.entity.EntityType != EntityType.Nothing)
+                        if (node.TerrainType != _draw_terrain_type)
                         {
-                            node.Entity = buttonManager.entity;
+                            node.TerrainType = _draw_terrain_type;
+                        }
+                    }
+                    else
+                    {
+                        if (node.Entity.EntityType != _draw_entity.EntityType || node.Entity.Color != _draw_entity.Color)
+                        {
+                            if (_draw_entity.EntityType == EntityType.LockedDoor)
+                            {
+                                int index = EntityColorIndex.GetIndex(_draw_entity.Color);
+                                Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
+                                EntityManager.DereferenceEntityAt(node);
+                                GridNode old = EntityManager.DoorNodes[index];
+                                if (old != null)
+                                {
+                                    RemoveEntityAt(old);
+                                }
+                                EntityManager.DoorNodes[index] = node;
+                            }
+                            if (_draw_entity.EntityType == EntityType.Key)
+                            {
+                                int index = EntityColorIndex.GetIndex(_draw_entity.Color);
+                                Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
+                                EntityManager.DereferenceEntityAt(node);
+                                GridNode old = EntityManager.KeyNodes[index];
+                                if (old != null)
+                                {
+                                    RemoveEntityAt(old);
+                                }
+                                EntityManager.KeyNodes[index] = node;
+                            }
+                            if (_draw_entity.EntityType == EntityType.Treasure)
+                            {
+                                EntityManager.DereferenceEntityAt(node);
+                                if (EntityManager.Treasure != null)
+                                {
+                                    RemoveEntityAt(EntityManager.Treasure);
+                                }
+                                EntityManager.Treasure = node;
+                            }
+                            node.Entity = _draw_entity;
                         }
                     }
                 }
