@@ -7,69 +7,113 @@ using AISandbox;
 
 public class PathfollowingController : MonoBehaviour
 {
-    private Grid m_Grid;
-    private GridNode m_target;
-    List<GridNode> m_path;
+    private Grid m_grid;
+
+    public Grid Grid
+    {
+        get
+        {
+            return m_grid;
+        }
+        set
+        {
+            m_grid = value;
+        }
+    }
+
     private int m_path_index;
     private IActor m_actor;
-    private bool m_needToCalPath;
 
-    public bool needToCalPath
+    private int[] m_keys;
+
+    public int[] Keys
     {
-        get { return m_needToCalPath; }
-        set { m_needToCalPath = value; }
+        get { return m_keys; }
+        set { m_keys = value; }
+    }
+
+    public int KeyNum
+    {
+        get
+        {
+            int num = 0;
+            foreach (int key in Keys)
+            {
+                num += key;
+            }
+            return num;
+        }
+    }
+
+    private StateMachine<PathfollowingController> m_statemachine;
+
+    public StateMachine<PathfollowingController> StateMachine
+    {
+        get
+        {
+            return m_statemachine;
+        }
+        set
+        {
+            m_statemachine = value;
+        }
+    }
+
+    public void CleanUpInventory()
+    {
+        for (int i = 0; i < m_keys.Length; i ++)
+        {
+            m_keys[i] = 0;
+        }
+    }
+
+    public void Seek(GridNode i_seeking)
+    {
+        Vector2 steering = SteeringHelper.GetSeekSteering(m_actor, i_seeking.transform.position);
+        m_actor.SetInput(steering.x, steering.y);
+    }
+
+    public void Arrive(GridNode i_seeking)
+    {
+        Vector2 steering = Vector2.zero;
+        Renderer renderer = i_seeking.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            steering = SteeringHelper.GetArriveSteering(m_actor, i_seeking.transform.position, renderer.bounds.size.x);
+        }
+        m_actor.SetInput(steering.x, steering.y);
+    }
+
+    public void Idle()
+    {
+        Vector2 steering = Vector2.zero;
+        m_actor.SetInput(steering.x, steering.y);
+    }
+
+    public bool HandleMessage(Telegram msg)
+    {
+        return m_statemachine.HandleMessage(msg);
     }
 
     // Use this for initialization
     void Start ()
     {
-        m_Grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid>();
-        m_target = m_Grid.GetRandGrid();
+        m_grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid>();
         m_actor = GetComponent<IActor>();
-        m_path = new List<GridNode>();
+        m_keys = new int[EntityColorIndex.GetColorLength()];
+
+        m_statemachine = new StateMachine<PathfollowingController>(this);
+        m_statemachine.AddState(new SeekKeyState());
+        m_statemachine.AddState(new OpenDoorState());
+        m_statemachine.AddState(new GetTreasureState());
+        m_statemachine.AddState(new EndState());
+        m_statemachine.SetActiveState("SeekKey");
     }
 	
 	// Update is called once per frame
 	void Update ()
 	{
-	    Vector2 steering = Vector2.zero;
-        GridNode m_current = m_Grid.GetGridForPosition(transform.position);
-        if (!m_target.Passable || m_current == m_target || m_path.Count == 0)
-        {
-            m_target = m_Grid.GetRandGrid();
-            m_needToCalPath = true;
-        }
-
-	    if (m_current != null && m_needToCalPath)
-	    {
-	        m_needToCalPath = false;
-            AStar.GetShortestPath(m_current, m_target, m_Grid.diagnoal, out m_path);
-            m_path_index = 1;
-        }
-
-	    if (m_path.Count > 1)
-	    {
-            GridNode seeking = m_path[m_path_index];
-	        if (m_current == seeking)
-	        {
-	            m_path_index += 1;
-	            seeking = m_path[m_path_index];
-	        }
-	        if (seeking == m_target)
-	        {
-                Renderer renderer = seeking.GetComponent<Renderer>();
-	            if (renderer != null)
-	            {
-                    steering = SteeringHelper.GetArriveSteering(m_actor, seeking.transform.position, renderer.bounds.size.x);
-                }
-	        }
-	        else
-	        {
-                steering = SteeringHelper.GetSeekSteering(m_actor, seeking.transform.position);
-            }
-	    }
-
-        m_actor.SetInput(steering.x, steering.y);
+        StateMachine.Update();
     }
 
 }

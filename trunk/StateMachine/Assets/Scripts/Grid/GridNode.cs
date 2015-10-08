@@ -52,15 +52,27 @@ namespace AISandbox {
 
         [SerializeField]
         private Entity entity;
-        public Entity Entity
+        public EntityType EntityType
         {
             get
             {
-                return entity;
+                return entity.EntityType;
             }
             set
             {
-                entity = value;
+                entity.EntityType = value;
+            }
+        }
+
+        public Color EntityColor
+        {
+            get
+            {
+                return entity.Color;
+            }
+            set
+            {
+                entity.Color = value;
             }
         }
 
@@ -96,6 +108,15 @@ namespace AISandbox {
 
         public IList<GridNode> GetNeighbors( bool include_diagonal = false ) {
             return grid.GetNodeNeighbors( row, column, include_diagonal );
+        }
+        public bool Intersect(PathfollowingController i_pathfollowingController)
+        {
+            float xMin = transform.position.x - sprite_renderer.bounds.extents.x;
+            float xMax = transform.position.x + sprite_renderer.bounds.extents.x;
+            float yMin = transform.position.y - sprite_renderer.bounds.extents.y;
+            float yMax = transform.position.y + sprite_renderer.bounds.extents.y;
+            Vector2 position = i_pathfollowingController.transform.position;
+            return (position.x > xMin && position.x < xMax && position.y > yMin && position.y < yMax);
         }
     }
 }

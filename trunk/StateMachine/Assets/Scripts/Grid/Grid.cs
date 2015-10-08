@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.Assertions;
 
 namespace AISandbox {
-    public class Grid : MonoBehaviour {
+    public class Grid : MonoBehaviour
+    {
         public GridNode gridNodePrefab;
         public Pathfollowing pathfollowing;
         public ButtonManager buttonManager;
@@ -115,9 +116,7 @@ namespace AISandbox {
 
         private void RemoveEntityAt(GridNode i_gridNode)
         {
-            Entity temp = i_gridNode.Entity;
-            temp.EntityType = EntityType.Nothing;
-            i_gridNode.Entity = temp;            
+            i_gridNode.EntityType = EntityType.Nothing;
         }
 
 
@@ -149,7 +148,7 @@ namespace AISandbox {
                     }
                     else
                     {
-                        if (node.Entity.EntityType != _draw_entity.EntityType || node.Entity.Color != _draw_entity.Color)
+                        if (node.EntityType != _draw_entity.EntityType || node.EntityColor != _draw_entity.Color)
                         {
                             if (_draw_entity.EntityType == EntityType.LockedDoor)
                             {
@@ -184,7 +183,8 @@ namespace AISandbox {
                                 }
                                 EntityManager.Treasure = node;
                             }
-                            node.Entity = _draw_entity;
+                            node.EntityType = _draw_entity.EntityType;
+                            node.EntityColor = _draw_entity.Color;
                         }
                     }
                 }

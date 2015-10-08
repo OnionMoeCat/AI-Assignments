@@ -15,7 +15,11 @@ namespace AISandbox
 
         public static int GetIndex(Color i_color)
         {
-            return m_doorColorDict[i_color];
+            if (m_doorColorDict.ContainsKey(i_color))
+            {
+                return m_doorColorDict[i_color];
+            }
+            return -1;
         }
 
         public static int GetColorLength()
