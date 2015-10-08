@@ -9,6 +9,7 @@ namespace AISandbox {
         public int numRow = 30;
         public int numColumn = 30;
         public PathfollowingController pathfollowingController;
+        public GameObject ui;
         private const float SPAWN_RANGE = 10f;
         private List<PathfollowingController> m_actors = new List<PathfollowingController>();
 
@@ -40,10 +41,11 @@ namespace AISandbox {
 
         public void Reset()
         {
+            m_actors.Remove(m_controller);
             m_controller.CleanUpInventory();
             m_controller.gameObject.SetActive(false);
             EntityManager.Reset();
-            GameObject.FindGameObjectWithTag("UI").SetActive(true);
+            ui.SetActive(true);
         }
     }
 }

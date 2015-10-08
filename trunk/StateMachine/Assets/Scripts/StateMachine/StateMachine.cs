@@ -59,12 +59,11 @@ namespace AISandbox {
             }
             m_currentState = state;
             m_currentState.Enter(m_owner);
-            return false;
+            return true;
         }
 
         public bool SetActiveState(string name)
         {
-            m_previousState = m_currentState;
             foreach (State state in m_states)
             {
                 if (state.Name == name)

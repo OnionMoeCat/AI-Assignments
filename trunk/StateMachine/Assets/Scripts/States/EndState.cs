@@ -12,7 +12,7 @@ namespace AISandbox
         private GridNode m_target;
         List<GridNode> m_path;
         private int m_path_index;
-        private string m_name = "SeekKey";
+        private string m_name = "End";
 
         public override string Name
         {

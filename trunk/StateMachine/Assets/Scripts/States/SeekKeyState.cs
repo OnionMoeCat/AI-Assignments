@@ -34,12 +34,12 @@ namespace AISandbox
                 {
                     getAllKeys = false;
                     Grid grid = i_pathfollowingController.Grid;
-                    GridNode target = EntityManager.DoorNodes[i];
+                    GridNode target = EntityManager.KeyNodes[i];
                     GridNode current = grid.GetGridForPosition(i_pathfollowingController.transform.position);
                     if (current != null)
                     {
                         List<GridNode> path;
-                        if (AStar.GetShortestPath(current, target, grid.diagnoal, out path))
+                        if (AStar.GetShortestPath(i_pathfollowingController, current, target, grid.diagnoal, out path))
                         {
                             m_target = target;
                             m_path = path;
@@ -54,7 +54,7 @@ namespace AISandbox
                 i_pathfollowingController.StateMachine.SetActiveState("OpenDoor");
                 return;
             }
-            if (m_path == null)
+            if (m_path == null || m_path.Count == 0)
             {
                 if (i_pathfollowingController.KeyNum > 0)
                 {
@@ -76,8 +76,11 @@ namespace AISandbox
                 GridNode current = grid.GetGridForPosition(i_pathfollowingController.transform.position);
                 if (current == seeking && m_path_index + 1 < m_path.Count)
                 {
-                    m_path_index += 1;
-                    seeking = m_path[m_path_index];
+                    if (m_path_index + 1 < m_path.Count)
+                    {
+                        m_path_index += 1;
+                        seeking = m_path[m_path_index];
+                    }
                 }
                 if (seeking == m_target)
                 {
@@ -111,6 +114,7 @@ namespace AISandbox
                         Telegram message = new Telegram();
                         message.messageType = FSMMsgType.PICKUPKEY;
                         message.sender = i_pathfollowingController;
+                        message.content = gridNode;
                         EntityManager.HandleMessage(message);
                         i_pathfollowingController.StateMachine.SetActiveState("SeekKey");
                     }

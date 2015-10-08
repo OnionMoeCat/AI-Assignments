@@ -16,9 +16,8 @@ public class StartButton : MonoBehaviour
     }
 
     public void Click()
-    {
-        GetComponent<Button>().enabled = false;
+    {        
         GameObject.FindGameObjectWithTag("UI").SetActive(false);
-        GameObject.FindGameObjectWithTag("Pathfollowing").GetComponent<Pathfollowing>();
+        GameObject.FindGameObjectWithTag("Pathfollowing").GetComponent<Pathfollowing>().Launch();
     }
 }

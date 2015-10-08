@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
 using UnityEngineInternal;
 
 namespace AISandbox
@@ -12,8 +13,6 @@ namespace AISandbox
         private static GridNode[] doorNodes = new GridNode[EntityColorIndex.GetColorLength()];
         private static GridNode[] keyNodes = new GridNode[EntityColorIndex.GetColorLength()];
         private static GridNode treasure;
-
-        private static Pathfollowing pathfollowing;
 
         public static GridNode[] DoorNodes 
         {
@@ -166,55 +165,66 @@ namespace AISandbox
             treasure.EntityType = EntityType.Treasure;
         }
 
-        void Awake()
+        public static bool GridPassable(GridNode i_gridnode, PathfollowingController i_pathfollowingController)
         {
-            GameObject temp = GameObject.FindGameObjectWithTag("Pathfollowing");
-            if (temp)
+            if (i_gridnode.EntityType != EntityType.LockedDoor)
             {
-                pathfollowing = temp.GetComponent<Pathfollowing>();
+                return TerrainTypeManager.GetPassable(i_gridnode.TerrainType);
+            }
+            else
+            {
+                int index = EntityColorIndex.GetIndex(i_gridnode.EntityColor);
+                return (i_pathfollowingController.Keys[index] > 0);
             }
         }
 
-        void Update()
+        public static void QueryEveryActor()
         {
-            for (int i = 0; i < doorNodes.Length; i++)
+            GameObject temp = GameObject.FindGameObjectWithTag("Pathfollowing");
+            Pathfollowing pathfollowing = null;
+            if (temp)
             {
-                foreach (PathfollowingController actor in pathfollowing.Actors)
-                {
-                    if (doorNodes[i].Intersect(actor))
-                    {
-                        Telegram telegram = new Telegram();
-                        telegram.messageType = FSMMsgType.GETTODOOR;
-                        telegram.content = actor;
-                        actor.HandleMessage(telegram);
-                    }
-                }                
-            }
+                pathfollowing = temp.GetComponent<Pathfollowing>();
 
-            for (int i = 0; i < keyNodes.Length; i++)
-            {
+                for (int i = 0; i < doorNodes.Length; i++)
+                {
+                    foreach (PathfollowingController actor in pathfollowing.Actors)
+                    {
+                        if (doorNodes[i].Intersect(actor))
+                        {
+                            Telegram telegram = new Telegram();
+                            telegram.messageType = FSMMsgType.GETTODOOR;
+                            telegram.content = doorNodes[i];
+                            actor.HandleMessage(telegram);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < keyNodes.Length; i++)
+                {
+                    foreach (PathfollowingController actor in pathfollowing.Actors)
+                    {
+                        if (keyNodes[i].Intersect(actor))
+                        {
+                            Telegram telegram = new Telegram();
+                            telegram.messageType = FSMMsgType.GETTOKEY;
+                            telegram.content = keyNodes[i];
+                            actor.HandleMessage(telegram);
+                        }
+                    }
+                }
+
                 foreach (PathfollowingController actor in pathfollowing.Actors)
                 {
-                    if (keyNodes[i].Intersect(actor))
+                    if (treasure.Intersect(actor))
                     {
                         Telegram telegram = new Telegram();
-                        telegram.messageType = FSMMsgType.GETTOKEY;
-                        telegram.content = actor;
+                        telegram.messageType = FSMMsgType.GETTOTREASURE;
+                        telegram.content = treasure;
                         actor.HandleMessage(telegram);
                     }
                 }
-            }
-
-            foreach (PathfollowingController actor in pathfollowing.Actors)
-            {
-                if (treasure.Intersect(actor))
-                {
-                    Telegram telegram = new Telegram();
-                    telegram.messageType = FSMMsgType.GETTOTREASURE;
-                    telegram.content = actor;
-                    actor.HandleMessage(telegram);
-                }
-            }
+            }       
         }
     }
 

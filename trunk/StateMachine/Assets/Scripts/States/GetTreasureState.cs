@@ -12,7 +12,7 @@ namespace AISandbox
         private GridNode m_target;
         List<GridNode> m_path;
         private int m_path_index;
-        private string m_name = "SeekKey";
+        private string m_name = "GetTreasure";
 
         public override string Name
         {
@@ -35,7 +35,7 @@ namespace AISandbox
                 if (current != null)
                 {
                     List<GridNode> path;
-                    if (AStar.GetShortestPath(current, target, grid.diagnoal, out path))
+                    if (AStar.GetShortestPath(i_pathfollowingController, current, target, grid.diagnoal, out path))
                     {
                         m_target = target;
                         m_path = path;
@@ -43,7 +43,7 @@ namespace AISandbox
                     }
                 }
             }
-            if (m_path == null)
+            if (m_path == null || m_path.Count == 0)
             {
                 i_pathfollowingController.StateMachine.SetActiveState("Failure");
             }
@@ -58,8 +58,11 @@ namespace AISandbox
                 GridNode current = grid.GetGridForPosition(i_pathfollowingController.transform.position);
                 if (current == seeking)
                 {
-                    m_path_index += 1;
-                    seeking = m_path[m_path_index];
+                    if (m_path_index + 1 < m_path.Count)
+                    {
+                        m_path_index += 1;
+                        seeking = m_path[m_path_index];
+                    }
                 }
                 if (seeking == m_target)
                 {
@@ -90,6 +93,7 @@ namespace AISandbox
                     Telegram message = new Telegram();
                     message.messageType = FSMMsgType.PICKUPTREASURE;
                     message.sender = i_pathfollowingController;
+                    message.content = gridNode;
                     EntityManager.HandleMessage(message);
                     i_pathfollowingController.StateMachine.SetActiveState("End");
                 }

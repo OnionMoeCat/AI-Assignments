@@ -21,20 +21,6 @@ namespace AISandbox {
         }
 
         [SerializeField]
-        private bool passable;
-        public bool Passable
-        {
-            get
-            {
-                if (entity.EntityType == EntityType.LockedDoor)
-                {
-                    return false;
-                }
-                return passable;
-            }
-        }
-
-        [SerializeField]
         private TerrainType terrainType;
         public TerrainType TerrainType
         {
@@ -46,7 +32,6 @@ namespace AISandbox {
             {
                 terrainType = value;
                 cost = TerrainTypeManager.GetCost(terrainType);
-                passable = TerrainTypeManager.GetPassable(terrainType);
             }
         }
 
@@ -85,7 +70,7 @@ namespace AISandbox {
 
         void Update()
         {
-            if (Passable)
+            if (entity.EntityType != EntityType.LockedDoor)
             {
                 sprite_renderer.color = TerrainTypeManager.GetColor(terrainType);
             }
