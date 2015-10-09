@@ -10,7 +10,8 @@ namespace AISandbox {
         public int numColumn = 30;
         public PathfollowingController pathfollowingController;
         public GameObject ui;
-        private const float SPAWN_RANGE = 10f;
+        private const float SPAWN_POSITION_RANGE = 10f;
+        private const float SPAWN_VELOCITY_RANGE = 0.1f;
         private List<PathfollowingController> m_actors = new List<PathfollowingController>();
 
         private PathfollowingController m_controller;
@@ -32,17 +33,17 @@ namespace AISandbox {
 
         public void Launch() {
             m_controller.gameObject.SetActive(true);
-            Vector2 controllerPos = new Vector2(Random.Range(-SPAWN_RANGE, SPAWN_RANGE), Random.Range(-SPAWN_RANGE, SPAWN_RANGE));
+            Vector2 controllerPos = new Vector2(Random.Range(-SPAWN_POSITION_RANGE, SPAWN_POSITION_RANGE), Random.Range(-SPAWN_VELOCITY_RANGE, SPAWN_VELOCITY_RANGE));
             m_controller.transform.position = controllerPos;
             m_controller.GetComponent<OrientedActor>().initialVelocity = Random.onUnitSphere * Random.Range(0.0f, m_controller.GetComponent<OrientedActor>().TheoryMaxSpeed);
-            m_controller.transform.parent = transform;            
+            m_controller.transform.parent = transform;       
             m_actors.Add(m_controller);
         }
 
         public void Reset()
         {
             m_actors.Remove(m_controller);
-            m_controller.CleanUpInventory();
+            m_controller.Reset();
             m_controller.gameObject.SetActive(false);
             EntityManager.Reset();
             ui.SetActive(true);

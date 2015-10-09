@@ -41,7 +41,7 @@ namespace AISandbox
 
                 foreach (GridNode neighbour in currentNode.GetNeighbors(isDiagonal))
                 {
-                    if (EntityManager.GridPassable(neighbour, i_pathfollowingController))
+                    if (EntityManager.GridPassable(neighbour, i_end, i_pathfollowingController))
                     {
                         float newCost = currentCost + GetCost(currentNode, neighbour, isDiagonal);
                         float oldCost;

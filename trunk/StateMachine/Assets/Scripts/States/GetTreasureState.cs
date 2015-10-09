@@ -45,7 +45,7 @@ namespace AISandbox
             }
             if (m_path == null || m_path.Count == 0)
             {
-                i_pathfollowingController.StateMachine.SetActiveState("Failure");
+                i_pathfollowingController.StateMachine.SetActiveState("End");
             }
         }
 

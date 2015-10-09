@@ -24,16 +24,17 @@ namespace AISandbox
 
         public override void Enter(PathfollowingController i_pathfollowingController)
         {
-            GameObject temp = GameObject.FindGameObjectWithTag("Pathfollowing");
-            if (temp != null)
-            {
-                temp.GetComponent<Pathfollowing>().Reset();
-            }
+
         }
 
         public override void Update(PathfollowingController i_pathfollowingController)
         {
-
+            GameObject temp = GameObject.FindGameObjectWithTag("Pathfollowing");
+            if (temp != null)
+            {
+                temp.GetComponent<Pathfollowing>().Reset();
+                i_pathfollowingController.StateMachine.SetActiveState("SeekKey");
+            }            
         }
 
         public override void Exit(PathfollowingController i_pathfollowingController)

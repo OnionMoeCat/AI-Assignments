@@ -59,9 +59,9 @@ public class PathfollowingController : MonoBehaviour
         }
     }
 
-    public void CleanUpInventory()
+    public void Reset()
     {
-        for (int i = 0; i < m_keys.Length; i ++)
+        for (int i = 0; i < m_keys.Length; i++)
         {
             m_keys[i] = 0;
         }

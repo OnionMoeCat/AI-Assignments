@@ -154,6 +154,8 @@ namespace AISandbox
             {
                 keyPick[i] = false;
             }
+            treasurePick = false;
+
             for (int i = 0; i < doorNodes.Length; i++)
             {
                 doorNodes[i].EntityType = EntityType.LockedDoor;
@@ -165,7 +167,7 @@ namespace AISandbox
             treasure.EntityType = EntityType.Treasure;
         }
 
-        public static bool GridPassable(GridNode i_gridnode, PathfollowingController i_pathfollowingController)
+        public static bool GridPassable(GridNode i_gridnode, GridNode i_endNode, PathfollowingController i_pathfollowingController)
         {
             if (i_gridnode.EntityType != EntityType.LockedDoor)
             {
@@ -174,7 +176,7 @@ namespace AISandbox
             else
             {
                 int index = EntityColorIndex.GetIndex(i_gridnode.EntityColor);
-                return (i_pathfollowingController.Keys[index] > 0);
+                return (i_pathfollowingController.Keys[index] > 0 && i_gridnode == i_endNode);
             }
         }
 
@@ -214,14 +216,14 @@ namespace AISandbox
                     }
                 }
 
-                foreach (PathfollowingController actor in pathfollowing.Actors)
+                for (int i = 0; i < pathfollowing.Actors.Count; i ++)
                 {
-                    if (treasure.Intersect(actor))
+                    if (treasure.Intersect(pathfollowing.Actors[i]))
                     {
                         Telegram telegram = new Telegram();
                         telegram.messageType = FSMMsgType.GETTOTREASURE;
                         telegram.content = treasure;
-                        actor.HandleMessage(telegram);
+                        pathfollowing.Actors[i].HandleMessage(telegram);
                     }
                 }
             }       
