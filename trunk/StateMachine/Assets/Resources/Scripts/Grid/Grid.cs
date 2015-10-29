@@ -21,7 +21,8 @@ namespace AISandbox {
         private bool _diagnoal;
 
         private TerrainType _draw_terrain_type;
-        private Entity _draw_entity;
+        private EntityType _draw_entity_type;
+        private Color _draw_color;
 
         private bool m_enableEdit = true;
 
@@ -135,11 +136,12 @@ namespace AISandbox {
                     GridNode node = _nodes[row, column];
                     if (Input.GetMouseButtonDown(0))
                     {
-                        _draw_terrain_type = buttonManager.terrainType;
-                        _draw_entity = buttonManager.entity;
+                        _draw_terrain_type = buttonManager.TerrainType;
+                        _draw_entity_type = buttonManager.EntityType;
+                        _draw_color = buttonManager.Color;
                     }
 
-                    if (_draw_entity.EntityType == EntityType.Nothing)
+                    if (_draw_entity_type == EntityType.Nothing)
                     {
                         if (node.TerrainType != _draw_terrain_type)
                         {
@@ -148,43 +150,43 @@ namespace AISandbox {
                     }
                     else
                     {
-                        if (node.EntityType != _draw_entity.EntityType || node.EntityColor != _draw_entity.Color)
+                        if (node.EntityType != _draw_entity_type || node.EntityColor != _draw_color)
                         {
-                            if (_draw_entity.EntityType == EntityType.LockedDoor)
+                            if (_draw_entity_type == EntityType.LockedDoor)
                             {
-                                int index = EntityColorIndex.GetIndex(_draw_entity.Color);
+                                int index = EntityColorIndex.GetIndex(_draw_color);
                                 Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
                                 EntityManager.DereferenceEntityAt(node);
-                                GridNode old = EntityManager.DoorNodes[index];
+                                GridNode old = EntityManager.Doors[index].GridNode;
                                 if (old != null)
                                 {
                                     RemoveEntityAt(old);
                                 }
-                                EntityManager.DoorNodes[index] = node;
+                                EntityManager.Doors[index].GridNode = node;
                             }
-                            if (_draw_entity.EntityType == EntityType.Key)
+                            if (_draw_entity_type == EntityType.Key)
                             {
-                                int index = EntityColorIndex.GetIndex(_draw_entity.Color);
+                                int index = EntityColorIndex.GetIndex(_draw_color);
                                 Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
                                 EntityManager.DereferenceEntityAt(node);
-                                GridNode old = EntityManager.KeyNodes[index];
+                                GridNode old = EntityManager.Keys[index].GridNode;
                                 if (old != null)
                                 {
                                     RemoveEntityAt(old);
                                 }
-                                EntityManager.KeyNodes[index] = node;
+                                EntityManager.Keys[index].GridNode = node;
                             }
-                            if (_draw_entity.EntityType == EntityType.Treasure)
+                            if (_draw_entity_type == EntityType.Treasure)
                             {
                                 EntityManager.DereferenceEntityAt(node);
                                 if (EntityManager.Treasure != null)
                                 {
-                                    RemoveEntityAt(EntityManager.Treasure);
+                                    RemoveEntityAt(EntityManager.Treasure.GridNode);
                                 }
-                                EntityManager.Treasure = node;
+                                EntityManager.Treasure.GridNode = node;
                             }
-                            node.EntityType = _draw_entity.EntityType;
-                            node.EntityColor = _draw_entity.Color;
+                            node.EntityType = _draw_entity_type;
+                            node.EntityColor = _draw_color;
                         }
                     }
                 }

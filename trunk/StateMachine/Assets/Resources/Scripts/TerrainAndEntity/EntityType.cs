@@ -12,12 +12,6 @@ namespace AISandbox
         OpenedDoor
     };
 
-    public struct Entity
-    {
-        public EntityType EntityType;
-        public Color Color;
-    };
-
     public class EntityTypeManager
     {
         private static Dictionary<EntityType, bool> m_entityPassableDict = new Dictionary<EntityType, bool>()

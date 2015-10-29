@@ -27,10 +27,10 @@ namespace AISandbox
             m_target = null;
             m_path = null;
             m_path_index = -1;
-            if (EntityManager.TreasurePick == false)
+            if (EntityManager.Treasure.IsTaken == false)
             {
                 Grid grid = i_pathfollowingController.Grid;
-                GridNode target = EntityManager.Treasure;
+                GridNode target = EntityManager.Treasure.GridNode;
                 GridNode current = grid.GetGridForPosition(i_pathfollowingController.transform.position);
                 if (current != null)
                 {

@@ -4,46 +4,57 @@ using UnityEngineInternal;
 
 namespace AISandbox
 {
+    public class Entity
+    {
+        private GridNode gridNode;
+        public GridNode GridNode
+        {
+            get
+            {
+                return gridNode;
+            }
+            set
+            {
+                gridNode = value;
+            }
+        }
+        private bool isTaken;
+        public bool IsTaken
+        {
+            get
+            {
+                return isTaken;
+            }
+            set
+            {
+                isTaken = value;
+            }
+        }              
+    }
     public class EntityManager : MonoBehaviour
     {
-        private static bool[] doorOpen = new bool[EntityColorIndex.GetColorLength()];
-        private static bool[] keyPick = new bool[EntityColorIndex.GetColorLength()];
-        private static bool treasurePick = false;
-        private static GridNode[] doorNodes = new GridNode[EntityColorIndex.GetColorLength()];
-        private static GridNode[] keyNodes = new GridNode[EntityColorIndex.GetColorLength()];
-        private static GridNode treasure;
 
-        public static GridNode[] DoorNodes 
+
+        private static Entity[] doors = new Entity[EntityColorIndex.GetColorLength()];
+        private static Entity[] keys = new Entity[EntityColorIndex.GetColorLength()];
+        private static Entity treasure;
+
+        public static Entity[] Doors 
         {
-            get { return doorNodes; }
-            set { doorNodes = value; }
+            get { return doors; }
+            set { doors = value; }
         }
 
-        public static GridNode[] KeyNodes
+        public static Entity[] Keys
         {
-            get { return keyNodes; }
-            set { keyNodes = value; }
+            get { return keys; }
+            set { keys = value; }
         }
 
-        public static GridNode Treasure
+        public static Entity Treasure
         {
             get { return treasure; }
             set { treasure = value; }
-        }
-
-        public static bool[] DoorOpen
-        {
-            get { return doorOpen; }
-        }
-
-        public static bool[] KeyPick
-        {
-            get { return keyPick; }
-        }
-
-        public static bool TreasurePick
-        {
-            get { return treasurePick; }
         }
 
         public static bool HandleMessage(Telegram msg)
@@ -55,33 +66,33 @@ namespace AISandbox
                 switch (msg.messageType)
                 {
                     case FSMMsgType.PICKUPKEY:
-                        for (int i = 0; i < keyNodes.Length; i++)
+                        for (int i = 0; i < keys.Length; i++)
                         {
-                            if (keyNodes[i] == gridNode)
+                            if (keys[i].GridNode == gridNode)
                             {
                                 pfc.Keys[EntityColorIndex.GetIndex(gridNode.EntityColor)] ++;
-                                keyPick[i] = true;
+                                keys[i].IsTaken = true;
                                 gridNode.EntityType = EntityType.Nothing;
                                 break;
                             }
                         }
                         break;
                     case FSMMsgType.OPENDOOR:
-                        for (int i = 0; i < doorNodes.Length; i++)
+                        for (int i = 0; i < doors.Length; i++)
                         {
-                            if (doorNodes[i] == gridNode)
+                            if (doors[i].GridNode == gridNode)
                             {
                                 pfc.Keys[EntityColorIndex.GetIndex(gridNode.EntityColor)] --;
-                                doorOpen[i] = true;
+                                doors[i].IsTaken = true;
                                 gridNode.EntityType = EntityType.OpenedDoor;
                                 break;
                             }
                         }
                         break;
                     case FSMMsgType.PICKUPTREASURE:
-                        if (treasure == gridNode)
+                        if (treasure.GridNode == gridNode)
                         {
-                            treasurePick = true;
+                            treasure.IsTaken = true;
                             gridNode.EntityType = EntityType.Nothing;
                         }
                         break;
@@ -95,41 +106,43 @@ namespace AISandbox
 
         public static void DereferenceEntityAt(GridNode i_gridNode)
         {
-            for (int i = 0; i < doorNodes.Length; i++)
+            switch(i_gridNode.EntityType)
             {
-                if (doorNodes[i] == i_gridNode)
-                {
-                    doorNodes[i] = null;
-                }
-            }
-
-            for (int i = 0; i < keyNodes.Length; i++)
-            {
-                if (keyNodes[i] == i_gridNode)
-                {
-                    keyNodes[i] = null;
-                }
-            }
-
-            if (treasure == i_gridNode)
-            {
-                treasure = null;
+                case EntityType.LockedDoor:
+                    {
+                        int index = EntityColorIndex.GetIndex(i_gridNode.EntityColor);
+                        doors[index].GridNode = null;
+                    }
+                    break;
+                case EntityType.Key:
+                    {
+                        int index = EntityColorIndex.GetIndex(i_gridNode.EntityColor);
+                        keys[index].GridNode = null;
+                    }
+                    break;
+                case EntityType.Treasure:
+                    {
+                        treasure.GridNode = null;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         public static bool IsReady()
         {        
-            for (int i = 0; i < doorNodes.Length; i++)
+            for (int i = 0; i < doors.Length; i++)
             {
-                if (doorNodes[i] == null)
+                if (doors[i] == null)
                 {
                     return false;
                 }
             }
 
-            for (int i = 0; i < keyNodes.Length; i++)
+            for (int i = 0; i < keys.Length; i++)
             {
-                if (keyNodes[i] == null)
+                if (keys[i] == null)
                 {
                     return false;
                 }
@@ -145,25 +158,18 @@ namespace AISandbox
 
         public static void Reset()
         {
-            for (int i = 0 ; i < doorOpen.Length ; i++)
+            for (int i = 0 ; i < doors.Length ; i++)
             {
-                doorOpen[i] = false;
+                doors[i].IsTaken = false;
+                doors[i].GridNode.EntityType = EntityType.LockedDoor;
             }
-            for (int i = 0; i < keyPick.Length; i++)
+            for (int i = 0; i < doors.Length; i++)
             {
-                keyPick[i] = false;
+                keys[i].IsTaken = false;
+                keys[i].GridNode.EntityType = EntityType.Key;
             }
-            treasurePick = false;
-
-            for (int i = 0; i < doorNodes.Length; i++)
-            {
-                doorNodes[i].EntityType = EntityType.LockedDoor;
-            }
-            for (int i = 0; i < KeyNodes.Length; i++)
-            {
-                KeyNodes[i].EntityType = EntityType.Key;
-            }
-            treasure.EntityType = EntityType.Treasure;
+            treasure.IsTaken = false;
+            treasure.GridNode.EntityType = EntityType.Treasure;
         }
 
         public static bool GridPassable(GridNode i_gridnode, GridNode i_endNode, PathfollowingController i_pathfollowingController)
@@ -187,29 +193,29 @@ namespace AISandbox
             {
                 pathfollowing = temp.GetComponent<Pathfollowing>();
 
-                for (int i = 0; i < doorNodes.Length; i++)
+                for (int i = 0; i < doors.Length; i++)
                 {
                     foreach (PathfollowingController actor in pathfollowing.Actors)
                     {
-                        if (doorNodes[i].Intersect(actor))
+                        if (doors[i].GridNode.Intersect(actor))
                         {
                             Telegram telegram = new Telegram();
                             telegram.messageType = FSMMsgType.GETTODOOR;
-                            telegram.content = doorNodes[i];
+                            telegram.content = doors[i].GridNode;
                             actor.HandleMessage(telegram);
                         }
                     }
                 }
 
-                for (int i = 0; i < keyNodes.Length; i++)
+                for (int i = 0; i < keys.Length; i++)
                 {
                     foreach (PathfollowingController actor in pathfollowing.Actors)
                     {
-                        if (keyNodes[i].Intersect(actor))
+                        if (keys[i].GridNode.Intersect(actor))
                         {
                             Telegram telegram = new Telegram();
                             telegram.messageType = FSMMsgType.GETTOKEY;
-                            telegram.content = keyNodes[i];
+                            telegram.content = keys[i].GridNode;
                             actor.HandleMessage(telegram);
                         }
                     }
@@ -217,7 +223,7 @@ namespace AISandbox
 
                 for (int i = 0; i < pathfollowing.Actors.Count; i ++)
                 {
-                    if (treasure.Intersect(pathfollowing.Actors[i]))
+                    if (treasure.GridNode.Intersect(pathfollowing.Actors[i]))
                     {
                         Telegram telegram = new Telegram();
                         telegram.messageType = FSMMsgType.GETTOTREASURE;

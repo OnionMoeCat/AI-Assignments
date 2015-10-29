@@ -141,7 +141,7 @@ GameObject:
   - 222: {fileID: 197859706}
   - 114: {fileID: 197859705}
   m_Layer: 5
-  m_Name: Text (4)
+  m_Name: ChangeTerrainText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -475,7 +475,7 @@ GameObject:
   - 114: {fileID: 599136671}
   - 114: {fileID: 599136670}
   m_Layer: 5
-  m_Name: Image (6)
+  m_Name: ChangeKeyImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -548,7 +548,6 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 0, a: 1}
   - {r: 0, g: 0, b: 1, a: 1}
   EntityType: 2
-  Terrain: 0
   ButtonManager: {fileID: 1341829631}
 --- !u!114 &599136671
 MonoBehaviour:
@@ -639,7 +638,7 @@ GameObject:
   - 114: {fileID: 736278028}
   - 114: {fileID: 736278027}
   m_Layer: 5
-  m_Name: Image
+  m_Name: ChangeTerrainImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -703,7 +702,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 736278023}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71af8381709da9e479f3dedd4f2a57f8, type: 3}
+  m_Script: {fileID: 11500000, guid: 52bb82c3dfbcd32488a95995032d00db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Text: {fileID: 2096753536}
@@ -713,7 +712,6 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
   EntityType: 0
-  Terrain: 1
   ButtonManager: {fileID: 1341829631}
 --- !u!114 &736278028
 MonoBehaviour:
@@ -844,11 +842,11 @@ RectTransform:
   - {fileID: 1913514243}
   m_Father: {fileID: 1080888312}
   m_RootOrder: 0
-  m_AnchorMin: {x: .5, y: .5}
-  m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: -1, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 4, y: 9}
   m_SizeDelta: {x: 100, y: 30}
-  m_Pivot: {x: .5, y: .5}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &970335813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -888,8 +886,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 970335816}
-        m_MethodName: Click
+      - m_Target: {fileID: 1553366086}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 178496189}
+        m_MethodName: Launch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -945,6 +954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 477304ba42b765e4ebf92b5b6bc17d11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Text: {fileID: 1913514244}
 --- !u!1 &1021484041
 GameObject:
   m_ObjectHideFlags: 0
@@ -958,7 +968,7 @@ GameObject:
   - 114: {fileID: 1021484046}
   - 114: {fileID: 1021484045}
   m_Layer: 5
-  m_Name: Image (4)
+  m_Name: ChangeDoorImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1031,7 +1041,6 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 0, a: 1}
   - {r: 0, g: 0, b: 1, a: 1}
   EntityType: 1
-  Terrain: 0
   ButtonManager: {fileID: 1341829631}
 --- !u!114 &1021484046
 MonoBehaviour:
@@ -1092,11 +1101,11 @@ RectTransform:
   - {fileID: 970335812}
   m_Father: {fileID: 1553366087}
   m_RootOrder: 2
-  m_AnchorMin: {x: 0, y: .5}
-  m_AnchorMax: {x: 0, y: .5}
-  m_AnchoredPosition: {x: 10, y: 178}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 10, y: 14}
   m_SizeDelta: {x: 110, y: 48}
-  m_Pivot: {x: 0, y: .5}
+  m_Pivot: {x: 0, y: 0}
 --- !u!222 &1080888313
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1223,8 +1232,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102584267ef21d14fb1f6b9deb14ba8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrainType: 0
-  Current: {fileID: 736278027}
+  TerrainType: 0
+  EntityType: 0
+  Color: {r: 0, g: 0, b: 0, a: 0}
+  Current: {fileID: 2096753536}
 --- !u!1 &1392127698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1395,7 +1406,7 @@ GameObject:
   - 114: {fileID: 1758708295}
   - 114: {fileID: 1758708296}
   m_Layer: 5
-  m_Name: Image (7)
+  m_Name: ChangeTreasureImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1496,7 +1507,6 @@ MonoBehaviour:
   Colors:
   - {r: 0, g: 0, b: 0, a: 1}
   EntityType: 3
-  Terrain: 0
   ButtonManager: {fileID: 1341829631}
 --- !u!1 &1797136388
 GameObject:
@@ -1647,7 +1657,7 @@ GameObject:
   - 222: {fileID: 1890542545}
   - 114: {fileID: 1890542544}
   m_Layer: 5
-  m_Name: Text (6)
+  m_Name: ChangeTerrainText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1780,7 +1790,7 @@ GameObject:
   - 222: {fileID: 1908186131}
   - 114: {fileID: 1908186130}
   m_Layer: 5
-  m_Name: Text (7)
+  m_Name: ChangeTerrainText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2222,7 +2232,7 @@ GameObject:
   - 222: {fileID: 2096753537}
   - 114: {fileID: 2096753536}
   m_Layer: 5
-  m_Name: Text
+  m_Name: ChangeTerrainText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

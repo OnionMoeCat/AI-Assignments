@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace AISandbox
 {
-    class SeekKeyState : StateMachine<PathfollowingController>.State
+    class OpenDoorState : StateMachine<PathfollowingController>.State
     {
         private GridNode m_target;
         List<GridNode> m_path;
         private int m_path_index;
-        private string m_name = "SeekKey";
+        private string m_name = "OpenDoor";
 
         public override string Name
         {
@@ -24,19 +24,19 @@ namespace AISandbox
 
         public override void Enter(PathfollowingController i_pathfollowingController)
         {
-            bool getAllKeys = true;
+            bool getAllDoors = true;
             m_target = null;
             m_path = null;
             m_path_index = -1;
-            for (uint i = 0; i < EntityManager.KeyPick.Length; i ++)
+            for (uint i = 0; i < EntityManager.Doors.Length; i++)
             {
-                if (EntityManager.KeyPick[i] == false)
+                if (EntityManager.Doors[i].IsTaken == false)
                 {
-                    getAllKeys = false;
+                    getAllDoors = false;
                     Grid grid = i_pathfollowingController.Grid;
-                    GridNode target = EntityManager.KeyNodes[i];
+                    GridNode target = EntityManager.Doors[i].GridNode;
                     GridNode current = grid.GetGridForPosition(i_pathfollowingController.transform.position);
-                    if (current != null)
+                    if (current != null && i_pathfollowingController.Keys[EntityColorIndex.GetIndex(EntityManager.Doors[i].GridNode.EntityColor)] > 0)
                     {
                         List<GridNode> path;
                         if (AStar.GetShortestPath(i_pathfollowingController, current, target, grid.diagnoal, out path))
@@ -45,24 +45,24 @@ namespace AISandbox
                             m_path = path;
                             m_path_index = 1;
                             break;
-                        }                       
+                        }
                     }
                 }
             }
-            if (getAllKeys)
+            if (getAllDoors)
             {
-                i_pathfollowingController.StateMachine.SetActiveState("OpenDoor");
+                i_pathfollowingController.StateMachine.SetActiveState("GetTreasure");
                 return;
             }
             if (m_path == null || m_path.Count == 0)
             {
-                if (i_pathfollowingController.KeyNum > 0)
+                if (i_pathfollowingController.StateMachine.PreviousState.Name == "SeekKey")
                 {
-                    i_pathfollowingController.StateMachine.SetActiveState("OpenDoor");
+                    i_pathfollowingController.StateMachine.SetActiveState("End");
                 }
                 else
                 {
-                    i_pathfollowingController.StateMachine.SetActiveState("End");
+                    i_pathfollowingController.StateMachine.SetActiveState("SeekKey");
                 }
             }
         }
@@ -74,7 +74,7 @@ namespace AISandbox
                 GridNode seeking = m_path[m_path_index];
                 Grid grid = i_pathfollowingController.Grid;
                 GridNode current = grid.GetGridForPosition(i_pathfollowingController.transform.position);
-                if (current == seeking && m_path_index + 1 < m_path.Count)
+                if (current == seeking)
                 {
                     if (m_path_index + 1 < m_path.Count)
                     {
@@ -98,12 +98,12 @@ namespace AISandbox
 
         public override void Exit(PathfollowingController i_pathfollowingController)
         {
-            
+
         }
 
         public override bool OnMessage(PathfollowingController i_pathfollowingController, Telegram msg)
         {
-            if (msg.messageType == FSMMsgType.GETTOKEY)
+            if (msg.messageType == FSMMsgType.GETTODOOR)
             {
                 GridNode gridNode = msg.content as GridNode;
                 if (gridNode != null)
@@ -111,12 +111,15 @@ namespace AISandbox
                     int index = EntityColorIndex.GetIndex(gridNode.EntityColor);
                     if (index >= 0)
                     {
-                        Telegram message = new Telegram();
-                        message.messageType = FSMMsgType.PICKUPKEY;
-                        message.sender = i_pathfollowingController;
-                        message.content = gridNode;
-                        EntityManager.HandleMessage(message);
-                        i_pathfollowingController.StateMachine.SetActiveState("SeekKey");
+                        if (i_pathfollowingController.Keys[index] > 0)
+                        {
+                            Telegram message = new Telegram();
+                            message.messageType = FSMMsgType.OPENDOOR;
+                            message.sender = i_pathfollowingController;
+                            message.content = gridNode;
+                            EntityManager.HandleMessage(message);
+                            i_pathfollowingController.StateMachine.SetActiveState("OpenDoor");
+                        }
                     }
                 }
             }

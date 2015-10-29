@@ -36,41 +36,42 @@ namespace AISandbox {
         }
 
         [SerializeField]
-        private Entity entity;
+        private EntityType entityType;
         public EntityType EntityType
         {
             get
             {
-                return entity.EntityType;
+                return entityType;
             }
             set
             {
-                entity.EntityType = value;
+                entityType = value;
             }
         }
 
+        [SerializeField]
+        private Color entityColor;
         public Color EntityColor
         {
             get
             {
-                return entity.Color;
+                return entityColor;
             }
             set
             {
-                entity.Color = value;
+                entityColor = value;
             }
         }
 
         private void Awake()
         {
-            entity = new Entity();
             sprite_renderer = GetComponent<SpriteRenderer>();
             child_sprite_renderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
         }
 
         void Update()
         {
-            if (entity.EntityType != EntityType.LockedDoor)
+            if (entityType != EntityType.LockedDoor)
             {
                 sprite_renderer.color = TerrainTypeManager.GetColor(terrainType);
             }
@@ -79,15 +80,15 @@ namespace AISandbox {
                 sprite_renderer.color = Color.black;
             }
 
-            if (entity.EntityType == EntityType.Nothing)
+            if (entityType == EntityType.Nothing)
             {
                 child_sprite_renderer.enabled = false;
             }
             else
             {
                 child_sprite_renderer.enabled = true;
-                child_sprite_renderer.color = entity.Color;
-                child_sprite_renderer.sprite = EntityTypeManager.GetSprite(entity.EntityType);
+                child_sprite_renderer.color = entityColor;
+                child_sprite_renderer.sprite = EntityTypeManager.GetSprite(entityType);
             }
         }
 
