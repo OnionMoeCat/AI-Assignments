@@ -9,7 +9,7 @@ namespace AISandbox
 {
     public class AStar
     {
-        public static bool GetShortestPath(PathfollowingController i_pathfollowingController, GridNode i_start, GridNode i_end, bool isDiagonal, out List<GridNode> o_path, out List<GridNode> o_open)
+        public static bool GetShortestPath(OrientedActor i_orientedActor, GridNode i_start, GridNode i_end, bool isDiagonal, out List<GridNode> o_path, out List<GridNode> o_open)
         {
             o_path = new List<GridNode>();
             o_open = new List<GridNode>();
@@ -41,7 +41,7 @@ namespace AISandbox
 
                 foreach (GridNode neighbour in currentNode.GetNeighbors(isDiagonal))
                 {
-                    if (EntityManager.GridPassable(neighbour, i_end, i_pathfollowingController))
+                    if (EntityManager.GridPassable(neighbour, i_end, i_orientedActor))
                     {
                         float newCost = currentCost + GetCost(currentNode, neighbour, isDiagonal);
                         float oldCost;
@@ -70,12 +70,12 @@ namespace AISandbox
             {
 
                 GridNode currentNode = i_end;
-                o_path.Add(currentNode);
-                while (path.ContainsKey(currentNode))
+                do
                 {
-                    currentNode = path[currentNode];
                     o_path.Add(currentNode);
+                    currentNode = path[currentNode];
                 }
+                while (path.ContainsKey(currentNode));
                 o_path.Reverse();
 
                 
@@ -87,10 +87,10 @@ namespace AISandbox
 
         }
 
-        public static bool GetShortestPath(PathfollowingController i_pathfollowingController, GridNode i_start, GridNode i_end, bool isDiagonal, out List<GridNode> o_path)
+        public static bool GetShortestPath(OrientedActor i_orientedActor, GridNode i_start, GridNode i_end, bool isDiagonal, out List<GridNode> o_path)
         {
             List<GridNode> open;
-            return GetShortestPath(i_pathfollowingController, i_start, i_end, isDiagonal, out o_path, out open);
+            return GetShortestPath(i_orientedActor, i_start, i_end, isDiagonal, out o_path, out open);
         }
 
         private static float GetCost(GridNode i_from, GridNode i_to, bool isDiagonal)

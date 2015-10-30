@@ -7,16 +7,25 @@ namespace AISandbox
 {
     class BT_MemSequence: BT_BaseNode
     {
+        public BT_MemSequence(List<BT_BaseNode> i_children) : base(i_children)
+        {
+        }
         public override void Open(BT_Tick tick)
         {
             tick.Blackboard.Set("runningChild", 0, tick.Tree.Id, this.id);
         }
         public override BT_Status Tick(BT_Tick tick)
         {
-            int child = tick.Blackboard.Get("runningChild", tick.Tree.Id, id) as Integer;
-            for (var i = child; i < children.Count; i++)
+            Integer child = tick.Blackboard.Get("runningChild", tick.Tree.Id, id) as Integer;
+
+            if (child == null)
             {
-                var status = children[i]._execute(tick);
+                return BT_Status.ERROR;
+            }
+
+            for (int i = child; i < children.Count; i++)
+            {
+                BT_Status status = children[i]._execute(tick);
 
                 if (status != BT_Status.SUCCESS)
                 {

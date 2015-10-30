@@ -95,7 +95,7 @@ GameObject:
   - 4: {fileID: 178496190}
   - 114: {fileID: 178496189}
   m_Layer: 0
-  m_Name: Pathfollowing
+  m_Name: Game
   m_TagString: Pathfollowing
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,6 +117,8 @@ MonoBehaviour:
   numColumn: 30
   pathfollowingController: {fileID: 1962696395}
   ui: {fileID: 1553366086}
+  m_controller: {fileID: 0}
+  m_inputManager: {fileID: 0}
 --- !u!4 &178496190
 Transform:
   m_ObjectHideFlags: 0
@@ -364,6 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fe75a075fb151d4782d3ca6d6017013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  running: 0
 --- !u!4 &593588007
 Transform:
   m_ObjectHideFlags: 0

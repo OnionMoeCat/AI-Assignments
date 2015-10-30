@@ -7,6 +7,9 @@ namespace AISandbox
 {
     class BT_TakenTreasure: BT_BaseNode
     {
+        public BT_TakenTreasure(List<BT_BaseNode> i_children) : base(i_children)
+        {
+        }
         public override BT_Status Tick(BT_Tick tick)
         {
             if (EntityManager.Treasure.IsTaken)

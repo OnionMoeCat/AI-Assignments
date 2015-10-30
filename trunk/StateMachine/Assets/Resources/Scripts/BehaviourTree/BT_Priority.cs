@@ -7,6 +7,9 @@ namespace AISandbox
 {
     class BT_Priority: BT_BaseNode
     {
+        public BT_Priority(List<BT_BaseNode> i_children) : base(i_children)
+        {
+        }
         public override BT_Status Tick(BT_Tick tick)
         {
             for (var i = 0; i < children.Count; i++)
@@ -22,5 +25,4 @@ namespace AISandbox
             return BT_Status.FAILURE;
         }
     }
-}
 }

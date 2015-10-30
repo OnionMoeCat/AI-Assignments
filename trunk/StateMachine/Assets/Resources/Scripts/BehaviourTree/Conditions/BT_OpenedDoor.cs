@@ -8,7 +8,7 @@ namespace AISandbox
     class BT_OpenedDoor: BT_BaseNode
     {
         private uint index;
-        public BT_OpenedDoor(uint i_index)
+        public BT_OpenedDoor(List<BT_BaseNode> i_children, uint i_index) : base(i_children)
         {
             index = i_index;
         }

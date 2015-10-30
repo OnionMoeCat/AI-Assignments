@@ -5,10 +5,10 @@ using System.Text;
 
 namespace AISandbox
 {
-    class BT_HasKey: BT_BaseNode
+    class BT_OpenDoor: BT_BaseNode
     {
         private uint index;
-        public BT_HasKey(List<BT_BaseNode> i_children, uint i_index) : base(i_children)
+        public BT_OpenDoor(List<BT_BaseNode> i_children, uint i_index) : base(i_children)
         {
             index = i_index;
         }
@@ -19,19 +19,16 @@ namespace AISandbox
             {
                 return BT_Status.ERROR;
             }
+            Entity entity = EntityManager.Doors[index];
+            entity.IsTaken = true;
+            entity.GridNode.EntityType = EntityType.OpenedDoor;
             OrientedActor orientedActor = controller.GetComponent<OrientedActor>();
             if (orientedActor == null)
             {
                 return BT_Status.ERROR;
             }
-            if (orientedActor.Keys[index] > 0)
-            {
-                return BT_Status.SUCCESS;
-            }
-            else
-            {
-                return BT_Status.FAILURE;
-            }
+            orientedActor.Keys[index] -= 1;
+            return BT_Status.SUCCESS;
         }
     }
 }

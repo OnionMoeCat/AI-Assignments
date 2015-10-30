@@ -52,10 +52,15 @@ namespace AISandbox
             memory[key] = value;
         }
 
-        public object Get(string key, object value, string treeScope = null, string nodeScope = null)
+        public object Get(string key, string treeScope = null, string nodeScope = null)
         {
             var memory = this._getMemory(treeScope, nodeScope);
-            return memory[key];
+            object value;
+            if (!memory.TryGetValue(key, out value))
+            {
+                return null;
+            }
+            return value;
         }      
     }
 }

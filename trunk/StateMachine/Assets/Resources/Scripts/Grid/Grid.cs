@@ -7,7 +7,6 @@ namespace AISandbox {
     public class Grid : MonoBehaviour
     {
         public GridNode gridNodePrefab;
-        public Pathfollowing pathfollowing;
 
         private GridNode[ , ] _nodes;
         private float _node_width;

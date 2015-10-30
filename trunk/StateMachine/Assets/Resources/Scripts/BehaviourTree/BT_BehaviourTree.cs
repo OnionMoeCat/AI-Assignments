@@ -16,6 +16,17 @@ namespace AISandbox
             }
         }
         BT_BaseNode root;
+        public BT_BaseNode Root
+        {
+            get
+            {
+                return root;
+            }
+            set
+            {
+                root = value;
+            }
+        }
         public void Tick(object target, BT_BlackBoard blackboard)
         {
             /* CREATE A TICK OBJECT */
@@ -50,7 +61,6 @@ namespace AISandbox
 
             /* POPULATE BLACKBOARD */
             blackboard.Set("openNodes", currOpenNodes, this.id);
-            blackboard.Set("nodeCount", tick.OpenNodes.Count, this.id);
         }
     }
 }

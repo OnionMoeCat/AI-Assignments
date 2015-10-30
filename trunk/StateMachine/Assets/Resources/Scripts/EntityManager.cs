@@ -55,53 +55,6 @@ namespace AISandbox
             set { treasure = value; }
         }
 
-        public static bool HandleMessage(Telegram msg)
-        {
-            GridNode gridNode = msg.content as GridNode;
-            PathfollowingController pfc = msg.sender as PathfollowingController;
-            if (gridNode != null)
-            {
-                switch (msg.messageType)
-                {
-                    case FSMMsgType.PICKUPKEY:
-                        for (int i = 0; i < keys.Length; i++)
-                        {
-                            if (keys[i].GridNode == gridNode)
-                            {
-                                pfc.Keys[EntityColorIndex.GetIndex(gridNode.EntityColor)] ++;
-                                keys[i].IsTaken = true;
-                                gridNode.EntityType = EntityType.Nothing;
-                                break;
-                            }
-                        }
-                        break;
-                    case FSMMsgType.OPENDOOR:
-                        for (int i = 0; i < doors.Length; i++)
-                        {
-                            if (doors[i].GridNode == gridNode)
-                            {
-                                pfc.Keys[EntityColorIndex.GetIndex(gridNode.EntityColor)] --;
-                                doors[i].IsTaken = true;
-                                gridNode.EntityType = EntityType.OpenedDoor;
-                                break;
-                            }
-                        }
-                        break;
-                    case FSMMsgType.PICKUPTREASURE:
-                        if (treasure.GridNode == gridNode)
-                        {
-                            treasure.IsTaken = true;
-                            gridNode.EntityType = EntityType.Nothing;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-        
-            return true;
-        }
-
         public static void DereferenceEntityAt(GridNode i_gridNode)
         {
             switch(i_gridNode.EntityType)
@@ -170,7 +123,7 @@ namespace AISandbox
             treasure.GridNode.EntityType = EntityType.Treasure;
         }
 
-        public static bool GridPassable(GridNode i_gridnode, GridNode i_endNode, PathfollowingController i_pathfollowingController)
+        public static bool GridPassable(GridNode i_gridnode, GridNode i_endNode, OrientedActor i_orientedActor)
         {
             if (i_gridnode.EntityType != EntityType.LockedDoor)
             {
@@ -179,50 +132,9 @@ namespace AISandbox
             else
             {
                 int index = EntityColorIndex.GetIndex(i_gridnode.EntityColor);
-                return (i_pathfollowingController.Keys[index] > 0 && i_gridnode == i_endNode);
+                return (i_orientedActor.Keys[index] > 0 && i_gridnode == i_endNode);
             }
         }
-
-        public static void QueryEveryActor()
-        {
-            GameObject temp = GameObject.FindGameObjectWithTag("Pathfollowing");
-            Pathfollowing pathfollowing = null;
-            if (temp)
-            {
-                pathfollowing = temp.GetComponent<Pathfollowing>();
-
-                for (int i = 0; i < doors.Length; i++)
-                {
-                    if (doors[i].GridNode.Intersect(pathfollowing.Actor))
-                    {
-                        Telegram telegram = new Telegram();
-                        telegram.messageType = FSMMsgType.GETTODOOR;
-                        telegram.content = doors[i].GridNode;
-                        pathfollowing.Actor.HandleMessage(telegram);
-                    }
-                }
-
-                for (int i = 0; i < keys.Length; i++)
-                {
-                    if (keys[i].GridNode.Intersect(pathfollowing.Actor))
-                    {
-                        Telegram telegram = new Telegram();
-                        telegram.messageType = FSMMsgType.GETTOKEY;
-                        telegram.content = keys[i].GridNode;
-                        pathfollowing.Actor.HandleMessage(telegram);
-                    }
-                }
-
-                if (treasure.GridNode.Intersect(pathfollowing.Actor))
-                {
-                    Telegram telegram = new Telegram();
-                    telegram.messageType = FSMMsgType.GETTOTREASURE;
-                    telegram.content = treasure.GridNode;
-                    pathfollowing.Actor.HandleMessage(telegram);
-                }
-            }       
-        }
     }
-
 }
 

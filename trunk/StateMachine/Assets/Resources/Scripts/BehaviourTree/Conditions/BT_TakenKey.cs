@@ -8,9 +8,8 @@ namespace AISandbox
     class BT_TakenKey: BT_BaseNode
     {
         private uint index;
-        public BT_TakenKey(uint i_index)
+        public BT_TakenKey(List<BT_BaseNode> i_children) : base(i_children)
         {
-            index = i_index;
         }
         public override BT_Status Tick(BT_Tick tick)
         {

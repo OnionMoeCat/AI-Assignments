@@ -10,7 +10,7 @@ namespace AISandbox
         protected string id = BT_Constant.CreateUUID();
         protected List<BT_BaseNode> children = new List<BT_BaseNode>();
 
-        public void AddChildren(List<BT_BaseNode> i_children)
+        public BT_BaseNode(List<BT_BaseNode> i_children)
         {
             if (i_children != null)
             {
@@ -26,7 +26,8 @@ namespace AISandbox
             this._enter(tick);
 
             /* OPEN */
-            if (tick.Blackboard.Get("isOpen", tick.Tree.Id, this.id) == null)
+            Boolean isOpen = tick.Blackboard.Get("isOpen", tick.Tree.Id, this.id) as Boolean;
+            if (isOpen == null || !isOpen)
             {
                 this._open(tick);
             }

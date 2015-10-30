@@ -5,12 +5,12 @@ using System.Text;
 
 namespace AISandbox
 {
-    class BT_HasKey: BT_BaseNode
+    class BT_CalPath: BT_BaseNode
     {
-        private uint index;
-        public BT_HasKey(List<BT_BaseNode> i_children, uint i_index) : base(i_children)
+        private GridNode target;
+        public BT_CalPath(List<BT_BaseNode> i_children, GridNode i_target) : base(i_children)
         {
-            index = i_index;
+            target = i_target;
         }
         public override BT_Status Tick(BT_Tick tick)
         {
@@ -24,14 +24,23 @@ namespace AISandbox
             {
                 return BT_Status.ERROR;
             }
-            if (orientedActor.Keys[index] > 0)
+            Grid grid = controller.Grid;
+            GridNode current = grid.GetGridForPosition(controller.transform.position);
+            if (current == null)
             {
+                return BT_Status.FAILURE;
+            }
+            List<GridNode> path;
+            if (AStar.GetShortestPath(orientedActor, current, target, grid.diagnoal, out path))
+            {
+                tick.Blackboard.Set("path", path, tick.Tree.Id);
+                tick.Blackboard.Set("pathIndex", 0, tick.Tree.Id);
                 return BT_Status.SUCCESS;
             }
             else
             {
                 return BT_Status.FAILURE;
-            }
+            }            
         }
     }
 }

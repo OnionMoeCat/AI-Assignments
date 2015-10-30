@@ -57,6 +57,13 @@ namespace AISandbox
             _velocity = initialVelocity;
             DrawVectors = _DrawVectors;
         }
+        public void Reset()
+        {
+            for (int i = 0; i < m_keys.Length; i++)
+            {
+                m_keys[i] = 0;
+            }
+        }
 
         public void SetInput(float x_axis, float y_axis)
         {
@@ -139,8 +146,13 @@ namespace AISandbox
             GridNode gridNode = _grid.GetGridForPosition(transform.position);
             if (gridNode.EntityType == EntityType.Key)
             {
-                //add key
+                int index = EntityColorIndex.GetIndex(gridNode.EntityColor);
+                Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
                 //tell manager that key is taken
+                Entity entity = EntityManager.Keys[index];
+                entity.IsTaken = true;
+                entity.GridNode.EntityType = EntityType.Nothing;
+                Keys[index] += 1;
                 return;
             }           
         }
