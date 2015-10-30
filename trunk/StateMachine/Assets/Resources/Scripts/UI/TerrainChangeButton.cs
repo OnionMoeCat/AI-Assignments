@@ -36,8 +36,7 @@ namespace AISandbox
             TerrainType terrainType = TerrainType.Plain + m_index;
             ButtonManager.TerrainType = terrainType;
             Text.text = Enum.GetName(typeof(TerrainType), terrainType);
-            ButtonManager.EntityType = EntityType;
-           
+            ButtonManager.EntityType = EntityType;           
         }
     }
 }

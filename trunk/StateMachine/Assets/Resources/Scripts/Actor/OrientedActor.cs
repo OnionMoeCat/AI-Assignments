@@ -41,6 +41,14 @@ namespace AISandbox
         private Vector2 _acceleration = Vector2.zero;
         private Vector2 _velocity = Vector2.zero;
 
+        private int[] m_keys;
+
+        public int[] Keys
+        {
+            get { return m_keys; }
+            set { m_keys = value; }
+        }
+
         private void Start()
         {
             _grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid>();
@@ -102,6 +110,12 @@ namespace AISandbox
 
         private void Update()
         {
+            UpdateSteering();
+            CheckGridNodeInventory();
+        }
+
+        private void UpdateSteering()
+        {
             Vector3 position = ScreenWrap();
             _velocity += _acceleration * Time.deltaTime;
             float cost = _grid.GetGridCostForPosition(position);
@@ -118,6 +132,17 @@ namespace AISandbox
             // The steering is reset every frame so SetInput() must be called every frame for continuous steering.
             _steering = Vector2.zero;
             _acceleration = Vector2.zero;
+        }
+
+        private void CheckGridNodeInventory()
+        {
+            GridNode gridNode = _grid.GetGridForPosition(transform.position);
+            if (gridNode.EntityType == EntityType.Key)
+            {
+                //add key
+                //tell manager that key is taken
+                return;
+            }           
         }
     }
 }

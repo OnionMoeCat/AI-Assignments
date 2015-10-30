@@ -8,6 +8,9 @@ TagManager:
   - OrientedActor
   - UI
   - Pathfollowing
+  - ButtonManager
+  - InputManager
+  - EntityQuery
   layers:
   - Default
   - TransparentFX

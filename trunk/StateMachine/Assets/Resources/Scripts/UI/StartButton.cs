@@ -16,4 +16,12 @@ public class StartButton : MonoBehaviour
         GetComponent<Button>().enabled = ready;
         Text.text = (ready) ? start : notReady;
     }
+
+    public void Click()
+    {
+        GameObject.FindGameObjectWithTag("UI").SetActive(false);
+        GameObject.FindGameObjectWithTag("Pathfollowing").GetComponent<Pathfollowing>().Launch();
+        GameObject.FindGameObjectWithTag("InputManager").GetComponent<InputManager>().EnableEdit = false;
+        GameObject.FindGameObjectWithTag("EntityQuery").GetComponent<EntityQuery>().Running = true;
+    }
 }

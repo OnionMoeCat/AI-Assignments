@@ -33,11 +33,9 @@ namespace AISandbox
     }
     public class EntityManager : MonoBehaviour
     {
-
-
-        private static Entity[] doors = new Entity[EntityColorIndex.GetColorLength()];
-        private static Entity[] keys = new Entity[EntityColorIndex.GetColorLength()];
-        private static Entity treasure;
+        private static Entity[] doors = ArrayInitializeHelper.InitializeArray<Entity>(EntityColorIndex.GetColorLength());
+        private static Entity[] keys = ArrayInitializeHelper.InitializeArray<Entity>(EntityColorIndex.GetColorLength());
+        private static Entity treasure = new Entity();
 
         public static Entity[] Doors 
         {
@@ -195,41 +193,32 @@ namespace AISandbox
 
                 for (int i = 0; i < doors.Length; i++)
                 {
-                    foreach (PathfollowingController actor in pathfollowing.Actors)
+                    if (doors[i].GridNode.Intersect(pathfollowing.Actor))
                     {
-                        if (doors[i].GridNode.Intersect(actor))
-                        {
-                            Telegram telegram = new Telegram();
-                            telegram.messageType = FSMMsgType.GETTODOOR;
-                            telegram.content = doors[i].GridNode;
-                            actor.HandleMessage(telegram);
-                        }
+                        Telegram telegram = new Telegram();
+                        telegram.messageType = FSMMsgType.GETTODOOR;
+                        telegram.content = doors[i].GridNode;
+                        pathfollowing.Actor.HandleMessage(telegram);
                     }
                 }
 
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    foreach (PathfollowingController actor in pathfollowing.Actors)
+                    if (keys[i].GridNode.Intersect(pathfollowing.Actor))
                     {
-                        if (keys[i].GridNode.Intersect(actor))
-                        {
-                            Telegram telegram = new Telegram();
-                            telegram.messageType = FSMMsgType.GETTOKEY;
-                            telegram.content = keys[i].GridNode;
-                            actor.HandleMessage(telegram);
-                        }
+                        Telegram telegram = new Telegram();
+                        telegram.messageType = FSMMsgType.GETTOKEY;
+                        telegram.content = keys[i].GridNode;
+                        pathfollowing.Actor.HandleMessage(telegram);
                     }
                 }
 
-                for (int i = 0; i < pathfollowing.Actors.Count; i ++)
+                if (treasure.GridNode.Intersect(pathfollowing.Actor))
                 {
-                    if (treasure.GridNode.Intersect(pathfollowing.Actors[i]))
-                    {
-                        Telegram telegram = new Telegram();
-                        telegram.messageType = FSMMsgType.GETTOTREASURE;
-                        telegram.content = treasure;
-                        pathfollowing.Actors[i].HandleMessage(telegram);
-                    }
+                    Telegram telegram = new Telegram();
+                    telegram.messageType = FSMMsgType.GETTOTREASURE;
+                    telegram.content = treasure.GridNode;
+                    pathfollowing.Actor.HandleMessage(telegram);
                 }
             }       
         }

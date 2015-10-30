@@ -8,9 +8,24 @@ namespace AISandbox
 {
     class EntityQuery : MonoBehaviour
     {
+        private bool running = false;
+        public bool Running
+        {
+            get
+            {
+                return running;
+            }
+            set
+            {
+                running = value;
+            }
+        }
         void Update()
         {
-            EntityManager.QueryEveryActor();     
+            if (running)
+            {
+                EntityManager.QueryEveryActor();
+            }   
         }
     }
 }

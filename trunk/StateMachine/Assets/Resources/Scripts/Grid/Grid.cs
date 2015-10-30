@@ -8,35 +8,15 @@ namespace AISandbox {
     {
         public GridNode gridNodePrefab;
         public Pathfollowing pathfollowing;
-        public ButtonManager buttonManager;
 
         private GridNode[ , ] _nodes;
         private float _node_width;
         private float _node_height;
 
         private int _num_row;
-
         private int _num_column;
 
         private bool _diagnoal;
-
-        private TerrainType _draw_terrain_type;
-        private EntityType _draw_entity_type;
-        private Color _draw_color;
-
-        private bool m_enableEdit = true;
-
-        public bool EnableEdit
-        {
-            get
-            {
-                return m_enableEdit;
-            }
-            set
-            {
-                m_enableEdit = value;
-            }
-        }
 
         public bool diagnoal
         {
@@ -110,89 +90,6 @@ namespace AISandbox {
             return neighbors;
         }
 
-        private void Update()
-        {
-            ProcessInput();
-        }
-
-        private void RemoveEntityAt(GridNode i_gridNode)
-        {
-            i_gridNode.EntityType = EntityType.Nothing;
-        }
-
-
-        public void ProcessInput()
-        {
-            if (m_enableEdit && Input.GetMouseButton(0))
-            {
-                Vector3 world_pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                Vector3 local_pos = transform.InverseTransformPoint(world_pos);
-                // This trick makes a lot of assumptions that the nodes haven't been modified since initialization.
-                int column = Mathf.FloorToInt(local_pos.x / _node_width);
-                int row = Mathf.FloorToInt(-local_pos.y / _node_height);
-                if (row >= 0 && row < _nodes.GetLength(0)
-                 && column >= 0 && column < _nodes.GetLength(1))
-                {
-                    GridNode node = _nodes[row, column];
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        _draw_terrain_type = buttonManager.TerrainType;
-                        _draw_entity_type = buttonManager.EntityType;
-                        _draw_color = buttonManager.Color;
-                    }
-
-                    if (_draw_entity_type == EntityType.Nothing)
-                    {
-                        if (node.TerrainType != _draw_terrain_type)
-                        {
-                            node.TerrainType = _draw_terrain_type;
-                        }
-                    }
-                    else
-                    {
-                        if (node.EntityType != _draw_entity_type || node.EntityColor != _draw_color)
-                        {
-                            if (_draw_entity_type == EntityType.LockedDoor)
-                            {
-                                int index = EntityColorIndex.GetIndex(_draw_color);
-                                Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
-                                EntityManager.DereferenceEntityAt(node);
-                                GridNode old = EntityManager.Doors[index].GridNode;
-                                if (old != null)
-                                {
-                                    RemoveEntityAt(old);
-                                }
-                                EntityManager.Doors[index].GridNode = node;
-                            }
-                            if (_draw_entity_type == EntityType.Key)
-                            {
-                                int index = EntityColorIndex.GetIndex(_draw_color);
-                                Debug.Assert(index >= 0 && index < EntityColorIndex.GetColorLength());
-                                EntityManager.DereferenceEntityAt(node);
-                                GridNode old = EntityManager.Keys[index].GridNode;
-                                if (old != null)
-                                {
-                                    RemoveEntityAt(old);
-                                }
-                                EntityManager.Keys[index].GridNode = node;
-                            }
-                            if (_draw_entity_type == EntityType.Treasure)
-                            {
-                                EntityManager.DereferenceEntityAt(node);
-                                if (EntityManager.Treasure != null)
-                                {
-                                    RemoveEntityAt(EntityManager.Treasure.GridNode);
-                                }
-                                EntityManager.Treasure.GridNode = node;
-                            }
-                            node.EntityType = _draw_entity_type;
-                            node.EntityColor = _draw_color;
-                        }
-                    }
-                }
-            }
-        }
-
         public float GetGridCostForPosition(Vector2 i_position)
         {
             GridNode gridNode = GetGridForPosition(i_position);
@@ -230,6 +127,18 @@ namespace AISandbox {
         public void SetDiagnoal(bool i_diagnoal)
         {
             _diagnoal = i_diagnoal;
+        }
+        public Vector2 GetGridPositionFromViewport(Vector2 i_position)
+        {
+            Vector3 world_pos = Camera.main.ScreenToWorldPoint(i_position);
+            Vector3 local_pos = transform.InverseTransformPoint(world_pos);
+            return local_pos;
+        }
+
+        public GridNode GetGridFromViewport(Vector2 i_position)
+        {
+            Vector3 world_pos = Camera.main.ScreenToWorldPoint(i_position);
+            return GetGridForPosition(world_pos);
         }
     }
 }
